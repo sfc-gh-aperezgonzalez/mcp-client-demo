@@ -70,7 +70,7 @@ snow sql -f setup.sql
 
 You'll need a Programmatic Access Token (PAT) or OAuth token. For PAT:
 
-1. In Snowflake, go to your user profile
+1. In Snowflake, go to "Users & roles", select a user
 2. Navigate to "Programmatic Access Tokens"
 3. Generate a new token
 4. Copy the token value (it will look like a long JWT string)
@@ -175,7 +175,7 @@ mcp-client-demo/
 ## Security Best Practices
 
 - ⚠️ **Never commit tokens**: Keep `SNOWFLAKE_AUTH_TOKEN` and LLM API keys out of version control
-- 🔒 Use OAuth for production deployments (PAT is fine for demos)
+- 🔒 Use OAuth for production deployments. Using hardcoded tokens can lead to token leakage.
 - 🛡️ Apply least-privilege RBAC for MCP server and tool access
 - 🔑 Rotate tokens regularly
 - 📋 See [MCP Security Recommendations](https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-agents-mcp#mcp-server-security-recommendations)
@@ -281,7 +281,7 @@ CREATE OR REPLACE MCP SERVER SALES_INSIGHT_SERVER
 ## Learn More
 
 - 📚 [Snowflake MCP Server Documentation](https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-agents-mcp)
-- 🚀 [Getting Started with Managed Snowflake MCP Server Quickstart](https://quickstarts.snowflake.com/guide/getting-started-with-managed-snowflake-mcp-server/)
+- 🚀 [Getting Started with Managed Snowflake MCP Server Quickstart](https://www.snowflake.com/en/developers/guides/getting-started-with-snowflake-mcp-server/)
 - 🤖 [Cortex Agent Documentation](https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-agents)
 - 📊 [Cortex Analyst Guide](https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-analyst)
 - 🔗 [Model Context Protocol Specification](https://spec.modelcontextprotocol.io/)
