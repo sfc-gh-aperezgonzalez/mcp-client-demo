@@ -8,7 +8,7 @@ This demo implements a complete agentic workflow using **LangGraph's agent frame
 
 1. **Goal Reception**: Agent receives a business objective (e.g., "Find root cause of revenue decline")
 2. **Tool Selection**: LLM (Gemini/OpenAI/etc.) reasons and selects the appropriate Snowflake Cortex Agent tool
-3. **Data Action**: LangChain agent calls the Snowflake Managed MCP Server via HTTPS
+3. **Data Action**: LangChain agent calls the Snowflake Managed MCP Server
 4. **Observation**: Receives structured findings from Snowflake's secure analysis
 5. **Downstream Decision**: LLM synthesizes data and determines next actions
 6. **Business Action**: Triggers external system handoffs (simulated Salesforce/Jira alerts)
@@ -21,8 +21,8 @@ This demo implements a complete agentic workflow using **LangGraph's agent frame
 ```
 ┌──────────────┐      ┌──────────────────────────────────┐      ┌─────────────────┐
 │  LangChain   │◄────►│  Snowflake Managed MCP Server    │◄────►│   Cortex Agent  │
-│   Agent      │      │  (OAuth/PAT Authentication)       │      │  + Analyst Tool │
-│ (LLM-powered)│      │                                   │      │                 │
+│   Agent      │      │  (OAuth/PAT Authentication)      │      │  + Analyst Tool │
+│ (LLM-powered)│      │                                  │      │                 │
 └──────────────┘      └──────────────────────────────────┘      └─────────────────┘
        │                                                                   │
        │                                                                   ▼
@@ -34,16 +34,13 @@ This demo implements a complete agentic workflow using **LangGraph's agent frame
 
 ## Prerequisites
 
-- **Snowflake Account** with access to:
-  - Cortex Agent feature
-  - Cortex Analyst
+- **Snowflake Account** 
   - Ability to create databases, schemas, and MCP servers
 - **LLM API Key** - This demo uses Gemini ([Get API key](https://aistudio.google.com/app/apikey)), but you can use:
   - OpenAI GPT-4 ([OpenAI API](https://platform.openai.com/))
   - Anthropic Claude ([Anthropic Console](https://console.anthropic.com/))
   - Any other LangChain-supported LLM
 - **Python 3.8+**
-- **Git**
 
 ## Setup Instructions
 
@@ -65,8 +62,8 @@ Execute the `setup.sql` script in your Snowflake account. This will:
 
 ```sql
 -- Run the entire setup.sql file in a Snowflake worksheet
--- Or execute via SnowSQL:
-snowsql -f setup.sql
+-- Or execute via Snowflake CLI:
+snow sql -f setup.sql
 ```
 
 ### 3. Generate Snowflake Authentication Token
