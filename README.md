@@ -89,7 +89,6 @@ SNOWFLAKE_AUTH_TOKEN = "your_pat_token_here"
 
 **Important**: Replace `{your-account}` with your Snowflake account identifier. Note:
 - Use **hyphens** (not underscores) in hostnames
-- Example: `sfseeurope-aperez-aws1.snowflakecomputing.com`
 - [More on account identifiers](https://docs.snowflake.com/en/user-guide/admin-account-identifier)
 
 ### 5. Set Up Python Environment
