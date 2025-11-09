@@ -1,26 +1,29 @@
-# Snowflake MCP Client Demo
+# Snowflake + LangChain MCP Demo
 
-A demonstration of using **Model Context Protocol (MCP)** to connect AI agents to [Snowflake's fully managed MCP server](https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-agents-mcp). This demo showcases an agentic workflow where a Gemini-powered agent orchestrates secure data analysis through Snowflake Cortex Agent and triggers downstream business actions.
+A demonstration of using **LangChain/LangGraph** with **Model Context Protocol (MCP)** to connect AI agents to [Snowflake's fully managed MCP server](https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-agents-mcp). This demo showcases an agentic workflow where a LangChain agent (powered by any LLM - Gemini in this example) orchestrates secure data analysis through Snowflake Cortex Agent and triggers downstream business actions.
 
 ## Overview
 
-This demo implements a complete agentic workflow:
+This demo implements a complete agentic workflow using **LangGraph's agent framework**:
 
 1. **Goal Reception**: Agent receives a business objective (e.g., "Find root cause of revenue decline")
-2. **Tool Selection**: Gemini LLM reasons and selects the appropriate Snowflake Cortex Agent tool
-3. **Data Action**: Agent calls the Snowflake Managed MCP Server via HTTPS
+2. **Tool Selection**: LLM (Gemini/OpenAI/etc.) reasons and selects the appropriate Snowflake Cortex Agent tool
+3. **Data Action**: LangChain agent calls the Snowflake Managed MCP Server via HTTPS
 4. **Observation**: Receives structured findings from Snowflake's secure analysis
 5. **Downstream Decision**: LLM synthesizes data and determines next actions
 6. **Business Action**: Triggers external system handoffs (simulated Salesforce/Jira alerts)
 7. **Final Synthesis**: Provides comprehensive natural language report
 
+**Note**: While this demo uses Gemini, you can easily swap in any LLM (OpenAI GPT-4, Claude, Llama, etc.) by changing the model initialization.
+
 ## Architecture
 
 ```
-┌─────────────┐      ┌──────────────────────────────────┐      ┌─────────────────┐
-│   Gemini    │◄────►│  Snowflake Managed MCP Server    │◄────►│   Cortex Agent  │
-│   Agent     │      │  (OAuth/PAT Authentication)       │      │  + Analyst Tool │
-└─────────────┘      └──────────────────────────────────┘      └─────────────────┘
+┌──────────────┐      ┌──────────────────────────────────┐      ┌─────────────────┐
+│  LangChain   │◄────►│  Snowflake Managed MCP Server    │◄────►│   Cortex Agent  │
+│   Agent      │      │  (OAuth/PAT Authentication)       │      │  + Analyst Tool │
+│ (LLM-powered)│      │                                   │      │                 │
+└──────────────┘      └──────────────────────────────────┘      └─────────────────┘
        │                                                                   │
        │                                                                   ▼
        │                                                         ┌──────────────────┐
@@ -35,7 +38,10 @@ This demo implements a complete agentic workflow:
   - Cortex Agent feature
   - Cortex Analyst
   - Ability to create databases, schemas, and MCP servers
-- **Google Gemini API Key** - Get one from [Google AI Studio](https://aistudio.google.com/app/apikey)
+- **LLM API Key** - This demo uses Gemini ([Get API key](https://aistudio.google.com/app/apikey)), but you can use:
+  - OpenAI GPT-4 ([OpenAI API](https://platform.openai.com/))
+  - Anthropic Claude ([Anthropic Console](https://console.anthropic.com/))
+  - Any other LangChain-supported LLM
 - **Python 3.8+**
 - **Git**
 
@@ -162,16 +168,16 @@ mcp-client-demo/
 
 ## Key Technologies
 
-- **[Snowflake Managed MCP Server](https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-agents-mcp)**: Secure, managed MCP implementation
+- **[LangChain](https://python.langchain.com/)** & **[LangGraph](https://langchain-ai.github.io/langgraph/)**: Agent orchestration framework - the core that enables the agentic workflow
 - **[Model Context Protocol (MCP)](https://spec.modelcontextprotocol.io/)**: Open standard for AI agent tool integration
+- **[Snowflake Managed MCP Server](https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-agents-mcp)**: Secure, managed MCP implementation
 - **[Cortex Agent](https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-agents)**: Snowflake's agentic orchestration system
 - **[Cortex Analyst](https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-analyst)**: Natural language to SQL for semantic data
-- **[LangGraph](https://langchain-ai.github.io/langgraph/)**: Agent orchestration framework
-- **[Google Gemini](https://ai.google.dev/)**: LLM for reasoning and decision-making
+- **LLM of your choice**: Gemini, OpenAI GPT-4, Claude, or any LangChain-supported model
 
 ## Security Best Practices
 
-- ⚠️ **Never commit tokens**: Keep `SNOWFLAKE_AUTH_TOKEN` and `GEMINI_API_KEY` out of version control
+- ⚠️ **Never commit tokens**: Keep `SNOWFLAKE_AUTH_TOKEN` and LLM API keys out of version control
 - 🔒 Use OAuth for production deployments (PAT is fine for demos)
 - 🛡️ Apply least-privilege RBAC for MCP server and tool access
 - 🔑 Rotate tokens regularly
@@ -200,6 +206,43 @@ PAT_INVALID error
 **Solution**: The script will automatically retry. If it persists, wait a few seconds between runs.
 
 ## Customization
+
+### Swap the LLM
+
+This demo uses Gemini, but you can easily use any other LLM. Just change the model initialization in `agent_test_mcp_gemini.py`:
+
+**For OpenAI:**
+```python
+from langchain_openai import ChatOpenAI
+
+model = ChatOpenAI(
+    model="gpt-4", 
+    temperature=0,
+    openai_api_key=os.getenv("OPENAI_API_KEY")
+)
+```
+
+**For Anthropic Claude:**
+```python
+from langchain_anthropic import ChatAnthropic
+
+model = ChatAnthropic(
+    model="claude-3-5-sonnet-20241022",
+    temperature=0,
+    anthropic_api_key=os.getenv("ANTHROPIC_API_KEY")
+)
+```
+
+**For Azure OpenAI:**
+```python
+from langchain_openai import AzureChatOpenAI
+
+model = AzureChatOpenAI(
+    azure_deployment="your-deployment-name",
+    api_version="2024-02-15-preview",
+    temperature=0
+)
+```
 
 ### Change the Analysis Prompt
 
